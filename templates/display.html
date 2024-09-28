@@ -1,0 +1,164 @@
+<!-- templates/display.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý điểm thực tập BMHS</title>
+    <!-- Include Bootstrap for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+
+    <!-- Custom CSS to style the table -->
+    <style>
+        table {
+            width: 100%;
+        }
+        th, td {
+            text-align: center;  /* Center align all table content */
+            vertical-align: middle;  /* Vertical center align for better readability */
+        }
+        th {
+            color: #007bff;
+        }
+        .column-to {
+            width: 80px;  /* Adjust the width for 'Tổ' column */
+        }
+        .column-nhom {
+            width: 80px;  /* Adjust the width for 'Nhóm' column */
+        }
+        tr {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="text-center">Quản lý điểm thực tập BMHS 2024</h2>
+
+        <form action="loc" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Filter Section -->
+            <div class="mb-3">
+                <label for="filter-name">Lọc theo Họ tên:</label>
+                <input type="text" id="filter-name" name="filter-name" placeholder="Nhập họ tên...">
+
+                <label for="filter-to">Lọc theo Tổ:</label>
+                <input type="text" id="filter-to" name="filter-to" placeholder="Nhập tổ...">
+
+                <label for="filter-nhom">Lọc theo Nhóm:</label>
+                <input type="text" id="filter-nhom" name="filter-nhom" placeholder="Nhập nhóm...">
+
+                <label for="filter-ghichu">Lọc theo Ghi chú:</label>
+                <input type="text" id="filter-ghichu" name="filter-ghichu" placeholder="Nhập ghi chú...">
+
+            </div>
+            <!-- Lọc Button -->
+            <button class="btn btn-primary" type="submit">Lọc</button>
+        </form>
+
+        <form action="luu" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+            </div>
+            <!-- Lưu Button -->
+            <button class="btn bg-info" type="submit">Lưu</button>
+        </form>
+
+        <div class="table-responsive">
+            {{ df|safe }}  <!-- Rendered DataFrame will be shown here -->
+        </div>
+
+        <!-- Bootstrap Modal for Editing -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Cập nhật</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" method="POST" action="{% url 'update_row' %}">
+                        {% csrf_token %}
+                        <input type="hidden" id="rowIndex" name="row_index" value="">
+                        <input type="hidden" id="mssvIndex" name="mssv_index" value="">
+
+                        <div class="mb-3">
+                            <label for="diem_b1_cc" class="form-label">Điểm CC Bài 1</label>
+                            <input type="number" step="0.1" class="form-control" id="diem_b1_cc" name="diem_b1_cc" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diem_b1_tt" class="form-label">Điểm TT Bài 1</label>
+                            <input type="number" step="0.1" class="form-control" id="diem_b1_tt" name="diem_b1_tt" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diem_b2_cc" class="form-label">Điểm CC Bài 2</label>
+                            <input type="number" step="0.1" class="form-control" id="diem_b2_cc" name="diem_b2_cc" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diem_b2_tt" class="form-label">Điểm TT Bài 2</label>
+                            <input type="number" step="0.1" class="form-control" id="diem_b2_tt" name="diem_b2_tt" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diem_b3_cc" class="form-label">Điểm CC Bài 3</label>
+                            <input type="number" step="0.1" class="form-control" id="diem_b3_cc" name="diem_b3_cc" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diem_b3_tt" class="form-label">Điểm TT Bài 3</label>
+                            <input type="number" step="0.1" class="form-control" id="diem_b3_tt" name="diem_b3_tt" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diemthi_lt" class="form-label">Điểm thi LT</label>
+                            <input type="number" step="0.1" class="form-control" id="diemthi_lt" name="diemthi_lt" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="diemthi_tt" class="form-label">Điểm thi TT</label>
+                            <input type="number" step="0.1" class="form-control" id="diemthi_tt" name="diemthi_tt" required>
+                        </div>
+                        <!-- Add other Điểm fields here similarly -->
+                        <div class="mb-3">
+                            <label for="ghi_chu" class="form-label">Ghi chú</label>
+                            <textarea class="form-control" id="ghi_chu" name="ghi_chu"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const rows = document.querySelectorAll("tr");
+            rows.forEach(row => {
+                row.addEventListener("click", function() {
+                    // Extract the data from the clicked row
+                    const cells = this.querySelectorAll("td");
+
+                    // Fill modal with existing values
+                    document.getElementById("rowIndex").value = this.rowIndex - 1; // Zero-based row index
+                    document.getElementById("mssvIndex").value = cells[0].innerText.trim(); // MSSV
+
+                    document.getElementById("ghi_chu").value = cells[4].innerText.trim();  // Ghi chú
+                    document.getElementById("diem_b1_cc").value = cells[5].innerText.trim();  // Điểm CC Bài 1
+                    document.getElementById("diem_b1_tt").value = cells[6].innerText.trim();  // Điểm TT Bài 1
+                    document.getElementById("diem_b2_cc").value = cells[7].innerText.trim();  // Điểm CC Bài 2
+                    document.getElementById("diem_b2_tt").value = cells[8].innerText.trim();  // Điểm TT Bài 2
+                    document.getElementById("diem_b3_cc").value = cells[9].innerText.trim();  // Điểm CC Bài 3
+                    document.getElementById("diem_b3_tt").value = cells[10].innerText.trim();  // Điểm TT Bài 3
+                    document.getElementById("diemthi_lt").value = cells[11].innerText.trim();  // Điểm thi LT
+                    document.getElementById("diemthi_tt").value = cells[12].innerText.trim();  // Điểm thi TT
+
+                    // Show the modal
+                    var editModal = new bootstrap.Modal(document.getElementById("editModal"));
+                    editModal.show();
+                });
+            });
+
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

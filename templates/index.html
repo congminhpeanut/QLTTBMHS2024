@@ -1,0 +1,24 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý nhập điểm thực tập BM Hóa Sinh 2024</title>
+</head>
+<body>
+    <h1>Quản lý nhập điểm thực tập BM Hóa Sinh 2024</h1>
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">Chọn file Excel:</label>
+        <input type="file" name="file" id="file" required><br>
+
+        <label for="header_row">Chọn dòng tiêu đề (mặc định là 1):</label>
+        <input type="number" name="header_row" id="header_row" value="1" min="1"><br>
+
+        <button type="submit">Mở file</button>
+    </form>
+
+</body>
+</html>
